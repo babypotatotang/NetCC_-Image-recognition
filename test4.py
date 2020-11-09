@@ -82,8 +82,12 @@ detect_count = 0
 #tracker[3].init(img, rect[3])
 
 trc_p = []
+t_length=0
 det_p = []
+pre_pt=[]
+pt=[]
 rect = ()
+
 lock1 = _thread.allocate_lock()
 lock2 = _thread.allocate_lock()
 lock3 = _thread.allocate_lock()
@@ -93,7 +97,7 @@ lock5 = _thread.allocate_lock()
 start_trc = 0
 cnt = 0
 def tracking(tracker, num):
-    global start_trc,pre_pt1
+    global start_trc,pre_pt1,t_length
     start_trc = 1
     count = 0
     cnt2 = 0
@@ -192,16 +196,17 @@ def tracking(tracker, num):
         trc_p[2*num+1]=pt2
 
       i=0
-      length = len(trc_p)/2
+      t_length = len(trc_p)/2
       print('trc_p:',trc_p)
       print('num:',num)
 
       if comp:
-          del trc[2*num]
-          length=length-1
+          del trc_p[0]
+          del trc_p[1]
+          t_length=t_length-1
           break
       
-      for i in range(int(length)):
+      for i in range(int(t_length)):
               cv2.rectangle(img, trc_p[2*i], trc_p[2*i+1], (255, 255, 255), 3)
                     
       lock1.release()
@@ -214,6 +219,7 @@ def tracking(tracker, num):
 
 
 def timer_thr(cnt):
+    print('start_thread')
     global distance_list, comp, distance,pre_pt,pt
     
     distance_list=[]
@@ -222,21 +228,20 @@ def timer_thr(cnt):
     
     print("length:",length)
     while True:
-        pre_pt=[]
-        pt=[]
+
         if length>0:
             lock4.acquire()
             pre_pt.append(trc_p[cnt])
             lock4.release()
             
             time.sleep(2)
-            
+
             lock5.acquire()
             pt.append(trc_p[cnt])
 
             print('pre_pt/pt',pre_pt,pt)
             x=(pre_pt[0][0]-pt[0][0])
-            y=(pre_pt[0][1]-p1[0][1])
+            y=(pre_pt[0][1]-pt[0][1])
 
             distance=math.sqrt(x**2+y**2)
                 
