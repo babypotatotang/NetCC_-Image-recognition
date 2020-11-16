@@ -157,7 +157,10 @@ def perspective(process, f_x, f_y):
 
 
 #Show webcam
+
+# capture.set(cv2.CV_CAP_PROP_FPS,24)
 real_ret, real_frame = capture.read()
+
 def webcam(queue):
     while True:
         frame = real_frame
@@ -170,6 +173,7 @@ def webcam(queue):
 
         cv2.imshow('CLIENT', frame)
         #frame=perspective(frame)
+
 
         #cv2.imshow('test', process)
 
@@ -191,17 +195,19 @@ def frame_drop():
         if real_ret == False:
             continue
 
-        #cv2.imshow('c2',real_frame)
+        cv2.imshow('c2',real_frame)
 
         key = cv2.waitKey(int(1000/FPS))
         if key == ord('q'):
             break
 
-TCP_IP = '10.100.201.132'
-TCP_PORT = 10002
+        time.sleep(0.3)
 
-#TCP_IP = '127.0.0.1'
-#TCP_PORT = 8000
+# TCP_IP = '10.100.201.132'
+# TCP_PORT = 10002
+
+TCP_IP = '127.0.0.1'
+TCP_PORT = 8000
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.connect((TCP_IP, TCP_PORT))
