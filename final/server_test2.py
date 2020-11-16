@@ -12,10 +12,10 @@ import math
 
 lock = threading.Lock()
 lock1 = threading.Lock()
-db_conn = pymysql.connect(host='116.89.189.36', user='root', passwd='4556',
-                          db='location', charset='utf8')
-curs = db_conn.cursor()
-curs2 = db_conn.cursor()
+# db_conn = pymysql.connect(host='116.89.189.36', user='root', passwd='4556',
+#                           db='location', charset='utf8')
+# curs = db_conn.cursor()
+# curs2 = db_conn.cursor()
 
 '''
 def recvall(sock, count):
@@ -108,20 +108,20 @@ def threaded(conn, addr, queue, array):
 
         now = datetime.now()
                 
-        sql_del = "delete from person where ip like %s"
-        val_del = (addr[0]+'%')
+        # sql_del = "delete from person where ip like %s"
+        # val_del = (addr[0]+'%')
         lock1.acquire()
-        curs.execute(sql_del, val_del)
-        db_conn.commit()
+        # curs.execute(sql_del, val_del)
+        # db_conn.commit()
         len_tmp = len(location)
         length = len_tmp/2
 
         print('location: ',location)                    
-        for j in range(int(length)):
-            sql_ins = "insert into person values(%s, %s, %s, %s)"
-            val_ins = (addr[0]+'/'+str(j), now, location[2*j], location[2*j+1])
-            curs.execute(sql_ins, val_ins)
-            db_conn.commit()
+        # for j in range(int(length)):
+        #     sql_ins = "insert into person values(%s, %s, %s, %s)"
+        #     val_ins = (addr[0]+'/'+str(j), now, location[2*j], location[2*j+1])
+        #     curs.execute(sql_ins, val_ins)
+        #     db_conn.commit()
         lock1.release()
 
         lock.release()
@@ -136,22 +136,22 @@ print('Listening')
 def delete_db():
     while True:
         lock1.acquire()
-        sql_sel = "select * from person limit 1"
-        curs2.execute(sql_sel)
-        rows = curs2.fetchone()
+        # sql_sel = "select * from person limit 1"
+        # curs2.execute(sql_sel)
+        # rows = curs2.fetchone()
         lock1.release()
         time.sleep(10)
 
         lock1.acquire()
-        sql_sel2 = "select * from person limit 1"
-        curs2.execute(sql_sel2)
-        rows2 = curs2.fetchone()
-
-        if (rows == rows2) and (rows2 is not None):
-            sql_del = "delete from person"
-            curs2.execute(sql_del)
-            db_conn.commit()
-            print('Time over Delete')
+        # sql_sel2 = "select * from person limit 1"
+        # curs2.execute(sql_sel2)
+        # rows2 = curs2.fetchone()
+        #
+        # if (rows == rows2) and (rows2 is not None):
+        #     sql_del = "delete from person"
+        #     curs2.execute(sql_del)
+        #     db_conn.commit()
+        #     print('Time over Delete')
         lock1.release()
 
     
