@@ -177,6 +177,7 @@ def perspective(process, f_x, f_y):
 # capture.set(cv2.CV_CAP_PROP_FPS,24)
 real_ret, real_frame = capture.read()
 
+
 def webcam(queue):
     while True:
         frame = real_frame
@@ -196,7 +197,7 @@ def webcam(queue):
         if key == ord('q'):
             break
 
-start_time=0
+
 def frame_drop():
     cap = cv2.VideoCapture(img)
     FPS = cap.get(cv2.CAP_PROP_FPS)
@@ -204,29 +205,22 @@ def frame_drop():
     global real_frame
     global real_ret
     global start_time
-    start_time = datetime.datetime.now()
-    print("FPS",FPS)
+    # start_time = datetime.datetime.now()
+    # print("FPS",FPS)
 
     while True:
         real_ret, real_frame = cap.read()
         real_frame = cv2.resize(real_frame, (resolution[0], resolution[1]))
 
-        elapsed_time = (datetime.datetime.now() - start_time).total_seconds()
-        print('elapsed_time:', elapsed_time)
-
-        if elapsed_time >= (1 / FPS):
-            real_ret, real_frame = cap.read()
-            real_frame = cv2.resize(real_frame, (resolution[0], resolution[1]))
-            start_time = datetime.datetime.now()
-
         if not real_ret:
             continue
 
-        key = cv2.waitKey(1)
+        cv2.imshow('c2_framedrop', real_frame)
+
+        key = cv2.waitKey(int(1000 / FPS))
+
         if key == ord('q'):
             break
-
-
 
 
 # TCP_IP = '10.100.201.132'

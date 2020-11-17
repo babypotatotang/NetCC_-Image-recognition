@@ -93,7 +93,8 @@ hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 # Initialize
 queue = Queue()
 point = ""
-lock=threading.Lock()
+lock = threading.Lock()
+
 
 def gps_conversion(foot_x, foot_y):
     a = Symbol('a')
@@ -196,37 +197,40 @@ def webcam(queue):
         if key == ord('q'):
             break
 
-start_time=0
+
 def frame_drop():
     cap = cv2.VideoCapture(img)
     FPS = cap.get(cv2.CAP_PROP_FPS)
 
     global real_frame
     global real_ret
-    global start_time
-    start_time = datetime.datetime.now()
-    print("FPS",FPS)
+    global check
+    print("FPS", FPS)
 
     while True:
-        real_ret, real_frame = cap.read()
-        real_frame = cv2.resize(real_frame, (resolution[0], resolution[1]))
-
-        elapsed_time = (datetime.datetime.now() - start_time).total_seconds()
-        print('elapsed_time:', elapsed_time)
-
-        if elapsed_time >= (1 / FPS):
+        if check:
+            lock.acquire()
             real_ret, real_frame = cap.read()
             real_frame = cv2.resize(real_frame, (resolution[0], resolution[1]))
-            start_time = datetime.datetime.now()
-
-        if not real_ret:
+            lock.release()
+        else:
             continue
 
-        key = cv2.waitKey(1)
+        key = cv2.waitKey(int(1000/FPS))
         if key == ord('q'):
             break
 
 
+def checktime():
+    global start_time
+    global check
+    while True:
+        elapsed_time = (datetime.datetime.now() - start_time).total_seconds()
+
+        if elapsed_time >= 1 / 24:
+            check = 1
+        else:
+            check=0
 
 
 # TCP_IP = '10.100.201.132'
@@ -239,8 +243,10 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.connect((TCP_IP, TCP_PORT))
 print('connect')
 start_time = datetime.datetime.now()
+check = 1
 
 start_new_thread(frame_drop, ())
+start_new_thread(checktime, ())
 start_new_thread(webcam, (queue,))
 # webcam(queue)
 

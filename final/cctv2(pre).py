@@ -1,5 +1,8 @@
 # Client
 import socket
+import datetime
+import threading
+
 import cv2
 import numpy as np
 from queue import Queue
@@ -7,27 +10,25 @@ from _thread import *
 import time
 from sympy import Symbol, solve
 import math
-import datetime
-import threading
 
 resolution = (854, 480)
-img = 'big.mp4'
+img = 'test2.mp4'
 
 # GPS list
 gps_list = []
+'''
+#Right up 0,0
+gps_list.append((35.832909,128.754458)) # Left Up
+gps_list.append((35.832842,128.754476)) # Right Up
+gps_list.append((35.832850,128.754155)) # Left Down
+gps_list.append((35.832776,128.754171)) # Right Down
+'''
+# Left down 0,0
+gps_list.append((35.832776, 128.754171))  # Left Up
+gps_list.append((35.832850, 128.754155))  # Right Up
+gps_list.append((35.832842, 128.754476))  # Left Down
+gps_list.append((35.832909, 128.754458))  # Right Down
 
-# Right up 0,0
-gps_list.append((35.832909, 128.754458))  # Left Up
-gps_list.append((35.832842, 128.754476))  # Right Up
-gps_list.append((35.832850, 128.754155))  # Left Down
-gps_list.append((35.832776, 128.754171))  # Right Down
-'''
-#Left down 0,0
-gps_list.append((35.832776,128.754171)) # Left Up
-gps_list.append((35.832850,128.754155)) # Right Up
-gps_list.append((35.832842,128.754476)) # Left Down
-gps_list.append((35.832909,128.754458)) # Right Down
-'''
 # 픽셀 간 위도 경도 비
 gps_width = (math.sqrt((gps_list[0][0] - gps_list[1][0]) ** 2 + (gps_list[0][1] - gps_list[1][1]) ** 2) + math.sqrt(
     (gps_list[2][0] - gps_list[3][0]) ** 2 + (gps_list[2][1] - gps_list[3][1]) ** 2)) / 2
@@ -46,10 +47,10 @@ img_original = cv2.resize(img_original, (resolution[0], resolution[1]))
 # Perspective Point
 point_list = []
 
-point_list.append((333, 70))
-point_list.append((559, 76))
-point_list.append((157, 426))
-point_list.append((623, 452))
+point_list.append((326, 136))
+point_list.append((506, 130))
+point_list.append((137, 392))
+point_list.append((714, 396))
 '''
 
 def mouse_callback(event, x, y, flags, param):
@@ -108,20 +109,11 @@ def gps_conversion(foot_x, foot_y):
     x = Symbol('x')
     y = Symbol('y')
 
-    equation1 = (res[1][a] - x) ** 2 + (res[1][b] - y) ** 2 - (foot_y * y_rate) ** 2
-    equation2 = (-(gps_list[0][1] - gps_list[1][1]) / (gps_list[0][0] - gps_list[1][0])) * (x - res[1][a]) + res[1][
+    equation1 = (res[0][a] - x) ** 2 + (res[0][b] - y) ** 2 - (foot_y * y_rate) ** 2
+    equation2 = (-(gps_list[0][1] - gps_list[1][1]) / (gps_list[0][0] - gps_list[1][0])) * (x - res[0][a]) + res[0][
         b] - y
     res = solve((equation1, equation2), dict=True)
-    res1 = res[0][y]
-    res2 = res[0][x]
-    # print('res: ', (res1, res2))
-    if type(res1) is complex:
-        res1 = res1.real
-        print('!!!')
-    if type(res2) is complex:
-        res2 = res2.real
-        print('!!!')
-    gps = str(res1) + ' ' + str(res2) + ' '
+    gps = str(float(res[1][y])) + ' ' + str(float(res[1][x])) + ' '
     return gps
 
 
@@ -174,7 +166,6 @@ def perspective(process, f_x, f_y):
 
 
 # Show webcam
-# capture.set(cv2.CV_CAP_PROP_FPS,24)
 real_ret, real_frame = capture.read()
 
 def webcam(queue):
@@ -196,7 +187,7 @@ def webcam(queue):
         if key == ord('q'):
             break
 
-start_time=0
+
 def frame_drop():
     cap = cv2.VideoCapture(img)
     FPS = cap.get(cv2.CAP_PROP_FPS)
@@ -204,29 +195,22 @@ def frame_drop():
     global real_frame
     global real_ret
     global start_time
-    start_time = datetime.datetime.now()
-    print("FPS",FPS)
 
     while True:
         real_ret, real_frame = cap.read()
         real_frame = cv2.resize(real_frame, (resolution[0], resolution[1]))
 
-        elapsed_time = (datetime.datetime.now() - start_time).total_seconds()
-        print('elapsed_time:', elapsed_time)
-
-        if elapsed_time >= (1 / FPS):
-            real_ret, real_frame = cap.read()
-            real_frame = cv2.resize(real_frame, (resolution[0], resolution[1]))
-            start_time = datetime.datetime.now()
+        # lock.release()
 
         if not real_ret:
             continue
 
-        key = cv2.waitKey(1)
+        cv2.imshow('c2_framedrop', real_frame)
+
+        key = cv2.waitKey(int(1000 / FPS))
+
         if key == ord('q'):
             break
-
-
 
 
 # TCP_IP = '10.100.201.132'
@@ -238,7 +222,6 @@ TCP_PORT = 8000
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.connect((TCP_IP, TCP_PORT))
 print('connect')
-start_time = datetime.datetime.now()
 
 start_new_thread(frame_drop, ())
 start_new_thread(webcam, (queue,))
