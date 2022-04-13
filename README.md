@@ -2,7 +2,7 @@
 [2020 NetCC] Smart Navigation using School zone CCTVs: Server &amp; Client code    
 _Update: 2022-04-13_  
 ## **Index**
-+ [About this project](###-**about-this-project**)
++ [About this project](#about-this-project)
 + [Overview](#-**overview**)
   + [Goal](#-**goal**)
   + [Flow](#-**flow**)
