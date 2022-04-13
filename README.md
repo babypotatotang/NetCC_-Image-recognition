@@ -3,13 +3,13 @@
 _Update: 2022-04-13_  
 ## **Index**
 + [About this project](#about-this-project)
-+ [Overview](#-**overview**)
-  + [Goal](#-**goal**)
-  + [Flow](#-**flow**)
-+ [Detail Function](#-**detail-function**)
-  + [Server](#-**server**)
-  + [Client](#-**client**)
-+ [Environment](#-**environment**)
++ [Overview](#overview)
+  + [Goal](#goal)
+  + [Flow](#flow)
++ [Detail Function](#detail-function)
+  + [Server](#server)
+  + [Client](#client)
++ [Environment](#environment)
 
 ## **About this project**
 <이미지 삽입>
