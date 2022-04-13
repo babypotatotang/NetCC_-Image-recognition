@@ -1,4 +1,4 @@
-# NetCC_Server
+# SmartNavigation: Sever  
 [2020 NetCC] Smart Navigation using School zone CCTVs: Server &amp; Client code    
 _Update: 2022-04-13_  
 ## **Index**
