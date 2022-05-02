@@ -1,6 +1,6 @@
 # SmartNavigation: Sever  
 [2020 NetCC] Smart Navigation using School zone CCTVs: Server &amp; Client code    
-_Update: 2022-04-13_  
+_Update: 2022-05-02_  
 ## **Index**
 + [About this project](#about-this-project)
 + [Overview](#overview)
@@ -11,31 +11,34 @@ _Update: 2022-04-13_
   + [Client](#client)
 + [Environment](#environment)
 
-## **About this project**
-<이미지 삽입>
-+ 프로젝트 이름: 스쿨존 CCTV를 활용한 스마트 내비게이션  
+## **About this project**       
+<img src = "https://user-images.githubusercontent.com/68631435/166236625-f223ba27-efbe-4cd3-bb73-3d36383002e7.png" width="60%" height="40%">     
+
+
++ 프로젝트 이름: 스쿨존 CCTV를 활용한 스마트 내비게이션   
 + 프로젝트 진행 목적: 공모전 출전   
 **Net Challenge 시즌 7**   
 (참고 url: https://www.koren.kr/kor/Alram/contyView.asp?s=1&page=1)    
-
-
-+ 프로젝트 진행 기간: 2020년 5월 ~ 2020년 12월
-
-
-+ 프로젝트 참여 인원: 5명  
++ 프로젝트 진행 기간: 2020년 5월 ~ 2020년 12월    
++ 프로젝트 참여 인원: 5명   
 ## **Overview** 
 > ### **Goal**
 + (목적) 스쿨존 내 CCTV를 활용해 실시간으로 어린이 보행자 위치를 파악함으써 사고를 방지하고 인명피해를 줄이기 위함. 
 + (필요성) 운전자에게 스쿨존 내 보행자 위치를 내비게이션 지도상에 나타냄으로써 사고를 선제 예방할 수 있음. 
-> ### **Flow**
-<이미지 삽입>  
+> ### **Flow**   
+<img src = "https://user-images.githubusercontent.com/68631435/166237292-a5a979f3-bd54-4c71-ab87-3f17281849ed.png" width="60%" height="40%">  
+
+
+<img src = "https://user-images.githubusercontent.com/68631435/166237340-ce2d1dc2-3eba-4410-b308-3576ce6f7640.png" width="60%" height="40%">     
+
+
+<img src = "https://user-images.githubusercontent.com/68631435/166237408-fae5aee2-a643-462a-993e-ff6907446e78.png" width="60%" height="40%">     
+
 
 ## **Detail Function**
-> ### **Server**   
-> #### **여러 Client(CCTV)로부터 전송된 위치 좌표의 값을 최종적으로 저장할 배열을 생성함. (Merging)**
-> #### Server.py
-
-
+### **Server**   
+**여러 Client(CCTV)로부터 전송된 위치 좌표의 값을 최종적으로 저장할 배열을 생성함. (Merging)**
+> #### Server.py    
 ``` python
 temp[num]=loc_tmp
 
@@ -67,17 +70,14 @@ for i in range(int(tem_len)):
         state = 0
   temp[cnt]=0
 ```
-+ 이미지 있으면 삽입
 + 여러 Client(CCTV)에서 수신받은 데이터를 각각 다른 변수에 저장함. 
 + 서로 다른 변수에 저장된 위치좌표 데이더들을 비교하여 가장 가까운 거리에 있는 좌표끼리의(한 사람으로 간주) 평균을 내어 최종 배열에 담아줌. 
 
-> ### **Client**   
-> #### **이미지에서 인식된 사람의 픽셀 좌표를 GPS 데이터로(위도, 경도) 변환함.**  
-> #### **필요한 데이터: CCTV의 위도 경도 값**  
-> #### CCTV 1.py, CCTV 2.py  
-
-
-#### **(1) Detect**   
+### **Client**   
+**이미지에서 인식된 사람의 픽셀 좌표를 GPS 데이터로(위도, 경도) 변환함.**  
+**필요한 데이터: CCTV의 위도 경도 값**  
+#### CCTV 1.py, CCTV 2.py   
+> #### **(1) Detect**   
 ``` python
 #Detect Function
 detected, _ = hog.detectMultiScale(frame) # 사람 detect
@@ -91,7 +91,7 @@ for (x, y, w, h) in detected:
 추출된 좌표에 대해서 변환 함수를 호출함.  
 
 
-#### **(2) Perspective**  
+> #### **(2) Perspective**  
 ``` python
 M = cv2.getPerspectiveTransform(pts1,pts2) #기울어진 화면을 평평하게 perspective transform 
 
@@ -111,7 +111,13 @@ point = gps_conversion(x_map, y_map) # 사람의 픽셀 좌표를 gps 장 위치
 생성된 배열에 곱 연산을 통해 기울어진 사람의 픽셀좌표를 평평한 좌표 값으로 변환하여 GPS 좌표 변환함수에 넣음.    
 
 
-#### **(3) GPS_Conversion**  
+> #### **(3) GPS_Conversion**    
+<img src = "https://user-images.githubusercontent.com/68631435/166237928-59053368-b6bc-479e-8ce7-0e127999161e.png" width="60%" height="40%">     
+
+
+<img src = "https://user-images.githubusercontent.com/68631435/166237948-660063b0-71e3-42a3-8bc9-5e509e6ef67c.png" width="60%" height="40%">   
+
+
 ``` python
 a = Symbol('a')
 b = Symbol('b')
@@ -128,9 +134,7 @@ equation2 = (-(gps_list[0][1]-gps_list[1][1])/(gps_list[0][0]-gps_list[1][0]))*(
 res=solve((equation1, equation2), dict=True)
 gps = str(res[0][y])+' '+str(res[0][x])+' '
 ```
-(이미지 삽입)   
-(식 추가)  
-직선의 방정식을 세워 각 점의 좌표를 구하는 방식으로 문제를 풀었음.  
++ 직선의 방정식을 세워 각 점의 좌표를 구하는 방식으로 문제를 풀었음.  
 
 ## **Environment** 
 + python 3.7.3
